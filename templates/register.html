@@ -1,6 +1,18 @@
 {% extends "layout.html" %}
 {% block title %}Regristreren{% endblock %}
 
+{% block message %}
+
+{% if msg is defined and msg|length %}
+<div class="alert alert-danger" role="alert">
+    {{ msg }}
+  </div>
+  {% else %}
+  <div class="alert alert-light" role="alert">
+  </div>
+  {% endif %}
+{% endblock %}
+
 {% block content %}
 
 <form action="/register" method="post">
@@ -11,7 +23,7 @@
             <input class="form-control" name="password" placeholder="Password" type="password">
         </div>
         <div class="form-group">
-            <input class="form-control" name="confirmation" placeholder="Password" type="password">
+            <input class="form-control" name="confirm" placeholder="Password" type="password">
         </div>
         <button class="btn btn-primary" type="submit">Create account</button>
     </form>
