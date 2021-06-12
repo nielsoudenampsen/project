@@ -1,6 +1,18 @@
 {% extends "layout.html" %}
 {% block title %}Recept toevoegen{% endblock %}
 
+{% block message %}
+
+{% if msg is defined and msg|length %}
+<div class="alert alert-danger" role="alert">
+    {{ msg }}
+  </div>
+  {% else %}
+  <div class="alert alert-light" role="alert">
+  </div>
+  {% endif %}
+{% endblock %}
+
 {% block content %}
 
 <form>

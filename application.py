@@ -1,9 +1,12 @@
-from flask import Flask,render_template,request,redirect, session
+import os, json
+
+from flask import Flask,flash,render_template,request,redirect, session,url_for
+from flask.helpers import get_flashed_messages
 from flask_session import Session
 from cs50 import SQL
 from tempfile import mkdtemp
 from werkzeug.security import check_password_hash, generate_password_hash, pbkdf2_bin
-from helpers import login_required,eur
+from helpers import login_required,eur, lookup_recipe,lookup_recipes
 
 
 app = Flask(__name__)
@@ -21,6 +24,10 @@ Session(app)
 
 db = SQL("sqlite:///recipe.db")
 
+# Make sure API key is set
+if not os.environ.get("API_KEY"):
+    raise RuntimeError("API_KEY not set")
+
 @app.route('/')
 @login_required
 def home():
@@ -29,8 +36,10 @@ def home():
                     {"naam":"Nasi goreng","text":"Een heerlijke knor maaltijd met rijst en kip."},
                     {"naam":"Bami","text":"Een heerlijke knor maaltijd met bami en varkensvlees."},
                     {"naam":"Hamburger","text":"Een zelfgemaakte hamburger met blauwe kaas."}]
-
-    return render_template('index.html',recepten=recepten)
+    
+    recipes = lookup_recipes(0,1,"under_30_minutes","Bolognese")
+    print(recipes["results"][0])
+    return render_template('index.html',recipes=recipes)
 
 @app.route('/toevoegen',methods=['GET', 'POST'])
 @login_required
@@ -46,7 +55,16 @@ def mijn_recepten():
 @login_required
 def stats():
     return render_template('stats.html')
-    
+
+@app.route('/logout',methods=['GET','POST'])
+def logout():
+    session.clear()
+    flash("Logged out succesful","success")
+    # for msg in get_flashed_messages():
+    #     print(msg)
+    return render_template('login.html')
+
+
 @app.route('/login',methods=['GET', 'POST'])
 def login():
     """Log user in"""
@@ -63,26 +81,27 @@ def login():
 
         # Ensure username was submitted
         if not username:
-            msg = "must provide username"
-            return render_template('register.html',msg=msg)
+            flash("Must provide username","danger")
+            return render_template('login.html')
 
         # Ensure password was submitted
         elif not password:
-            msg = "must provide password"
-            return render_template('register.html',msg=msg)
+            flash("Must provide password","danger")
+            return render_template('login.html')
 
         # Query database for username
         rows = db.execute("SELECT * FROM gebruikers WHERE naam = ?", username)
 
         # Ensure username exists and password is correct
         if len(rows) != 1 or not check_password_hash(rows[0]["hash"], password):
-            msg = "invalid username and/or password"
-            return render_template('register.html',msg=msg)
+            flash("Invalid username and/or password","danger")
+            return render_template('login.html')
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
 
         # Redirect user to home page
+        flash("Login succesful","success")
         return redirect("/")
 
     # User reached route via GET (as by clicking a link or via redirect)
@@ -96,28 +115,28 @@ def register():
         password = request.form.get('password')
         confirm = request.form.get('confirm')
         if not username:
-            msg = "You must provide a username"
-            return render_template('register.html',msg=msg)
+            flash("You must provide a username","danger")
+            return redirect('/register')
 
         if not password:
-            msg = "You must provide a password"
-            return render_template('register.html',msg=msg)
+            flash("You must provide a password","danger")
+            return redirect('/register')
 
         if not confirm:
-            msg = "You must confirm the password"
-            return render_template('register.html',msg=msg)
+            flash("You must confirm the password","danger")
+            return redirect('/register')
         
         if password != confirm:
-            msg = "Password does not match"
-            return render_template('register.html',msg=msg)
+            flash("Password does not match","danger")
+            return render_template('register.html')
 
         rows = db.execute("SELECT * FROM gebruikers WHERE naam = ?",username)
-        print(len(rows))
         if len(rows) != 0:
-            msg = "Username already exist"
-            return render_template('register.html',msg=msg)
+            flash("Username already exist","danger")
+            return redirect('/register')
 
-        db.execute("INSERT INTO gebruikers (naam,password) VALUES (?,?)",username,generate_password_hash(password=password,method='pbkdf2:sha256',salt_length=8))
+        db.execute("INSERT INTO gebruikers (naam,hash) VALUES (?,?)",username,generate_password_hash(password=password,method='pbkdf2:sha256',salt_length=8))
+        flash("Registerd succesfully","success")
         return redirect("/")
     else:
         return render_template('register.html')

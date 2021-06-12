@@ -1,17 +1,29 @@
 {% extends "layout.html" %}
 {% block title %}Recepten{% endblock %}
 
+{% block message %}
+
+{% if msg is defined and msg|length %}
+<div class="alert alert-danger" role="alert">
+    {{ msg }}
+  </div>
+  {% else %}
+  <div class="alert alert-light" role="alert">
+  </div>
+  {% endif %}
+{% endblock %}
+
 {% block content %}
 <div class="container">
 <div class="col">
 <div class="row justify-content-around">
-{% for recept in recepten %}
+{% for recipe in recipes %}
 <div class="card" style="width: 18rem;">
   <img class="card-img-top" src="/static/assets/placeholder.png" alt="Card image cap">
   <div class="card-body">
-    <h5 class="card-title">{{recept.naam}}</h5>
-    <p class="card-text">{{recept.text}}</p>
-    <a href="#" class="btn btn-primary">Ga naar {{recept.naam}}</a>
+    <h5 class="card-title"></h5>
+    <p class="card-text"></p>
+    <a href="#" class="btn btn-primary">Ga naar </a>
   </div>
 </div>
 {% endfor %}
