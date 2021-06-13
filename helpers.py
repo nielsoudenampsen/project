@@ -58,15 +58,18 @@ def lookup_recipe(recipe):
 def lookup_recipes(start,size,tag,query):
     """Look up quote for symbol."""
 
+    api_key = os.environ.get("API_KEY")
+
     url = "https://tasty.p.rapidapi.com/recipes/list"
 
     querystring = {"from":str(start),"size":str(size),"tags":tag,"q":query}
 
     headers = {
-        'x-rapidapi-key': "31f88e84e3msha75c614ea35c2aep1715afjsn2a4890a6452f",
+        'x-rapidapi-key': "70b3c859d5msh890f11222aa8ad9p14afddjsnc35eec10b6a7",
         'x-rapidapi-host': "tasty.p.rapidapi.com"
         }
 
     response = requests.request("GET", url, headers=headers, params=querystring)
-
-    return response.json()
+    response = response.json()
+    return  {"description": response["results"][0]["description"],
+            "name": response["results"][0]["name"]}

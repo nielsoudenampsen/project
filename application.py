@@ -38,7 +38,8 @@ def home():
                     {"naam":"Hamburger","text":"Een zelfgemaakte hamburger met blauwe kaas."}]
     
     recipes = lookup_recipes(0,1,"under_30_minutes","Bolognese")
-    print(recipes["results"][0])
+    
+    print(recipes)
     return render_template('index.html',recipes=recipes)
 
 @app.route('/toevoegen',methods=['GET', 'POST'])
