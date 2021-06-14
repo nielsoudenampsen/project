@@ -28,18 +28,17 @@ db = SQL("sqlite:///recipe.db")
 if not os.environ.get("API_KEY"):
     raise RuntimeError("API_KEY not set")
 
-@app.route('/')
+@app.route('/',methods=['GET', 'POST'])
 @login_required
 def home():
     
-    recepten = [    {"naam":"Kip Tantori","text":"Een heerlijke knor maaltijd met kip en groenten."},
-                    {"naam":"Nasi goreng","text":"Een heerlijke knor maaltijd met rijst en kip."},
-                    {"naam":"Bami","text":"Een heerlijke knor maaltijd met bami en varkensvlees."},
-                    {"naam":"Hamburger","text":"Een zelfgemaakte hamburger met blauwe kaas."}]
+    # recipes = lookup_recipes(0,10,"","bolognese")
+    if request.method == "POST":
+        search = request.form.get('search')
+        recipes = lookup_recipes(0,100,"",str(search))
+    else:
+        recipes = None
     
-    recipes = lookup_recipes(0,1,"under_30_minutes","Bolognese")
-    
-    print(recipes)
     return render_template('index.html',recipes=recipes)
 
 @app.route('/toevoegen',methods=['GET', 'POST'])
@@ -102,7 +101,7 @@ def login():
         session["user_id"] = rows[0]["id"]
 
         # Redirect user to home page
-        flash("Login succesful","success")
+        flash("Welcome, {}".format(username),"success")
         return redirect("/")
 
     # User reached route via GET (as by clicking a link or via redirect)

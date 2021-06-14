@@ -3,6 +3,7 @@
 
 {% block message %}
 
+
 {% if msg is defined and msg|length %}
 <div class="alert alert-danger" role="alert">
     {{ msg }}
@@ -14,22 +15,32 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
-<div class="col">
-<div class="row justify-content-around">
-{% for cards in range(recipes["count"][0]) %}
-<div class="card" style="width: 18rem;">
-  <img class="card-img-top" src="/static/assets/placeholder.png" alt="Card image cap">
+
+<form class="form-group" action="/" method="POST">
+  <div class="input-group mb-3">
+    <input name="search" type="text" class="form-control" placeholder="Search recipes" aria-label="Recipient's username" aria-describedby="button-addon2">
+    <button class="btn btn-success" type="submit" id="button-addon2">Search</button>
+  </div>
+</form>
+
+  <div class="row justify-content-around">
+{% if recipes is not none %}
+{% for recipe in recipes %}
+<div class="card" style="width: 16rem;">
+  <img class="card-img-top" src="{{recipe['img']}}" alt="Card image cap">
   <div class="card-body">
-    <h5 class="card-title"></h5>
+    <h6 class="card-title">{{recipe["name"]}}</h6>
     <p class="card-text"></p>
-    <a href="#" class="btn btn-primary">Ga naar </a>
+    <a href="#" class="btn btn-info">Ga naar </a>
   </div>
 </div>
 {% endfor %}
+{% else %}
+<h2>Notting found</h2>
 </div>
-</div>
-</div>
+
+
+{% endif %}
 
 	
 {% endblock %}
