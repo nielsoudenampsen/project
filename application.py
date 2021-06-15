@@ -1,4 +1,5 @@
 import os, json
+from pprint import pprint
 
 from flask import Flask,flash,render_template,request,redirect, session,url_for
 from flask.helpers import get_flashed_messages
@@ -35,7 +36,8 @@ def home():
     # recipes = lookup_recipes(0,10,"","bolognese")
     if request.method == "POST":
         search = request.form.get('search')
-        recipes = lookup_recipes(0,100,"",str(search))
+        recipes = lookup_recipes(0,1000,"",str(search))
+        pprint(recipes)
     else:
         recipes = None
     

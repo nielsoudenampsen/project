@@ -8,7 +8,6 @@ img {
     object-fit: cover;
 }
 
-.form-control{
-    float: left;
-    overflow: hidden;
+.card-title{
+    height: 46px;
 }

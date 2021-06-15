@@ -67,15 +67,15 @@ def lookup_recipes(start,size,tag,query):
         querystring = {"from":str(start),"size":str(size),"tags":tag,"q":query}
 
         headers = {
-            'x-rapidapi-key': "70b3c859d5msh890f11222aa8ad9p14afddjsnc35eec10b6a7",
+            'x-rapidapi-key': "cbc9c244d1mshbc7142f4dcf7d59p15a492jsn04e851823481",
             'x-rapidapi-host': "tasty.p.rapidapi.com"
             }
 
         response = requests.request("GET", url, headers=headers, params=querystring)
         response = response.json()
-        pprint(response)
+        # pprint(response)
         recipes = []
-        for i in range(response["count"]):
+        for i in range(len(response["results"])):
             recipes.append({
                 "description": response["results"][i]["description"],
                 "name": response["results"][i]["name"],
