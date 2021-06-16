@@ -29,6 +29,14 @@ db = SQL("sqlite:///recipe.db")
 if not os.environ.get("API_KEY"):
     raise RuntimeError("API_KEY not set")
 
+@app.route('/to_favorite',methods=['POST'])
+@login_required
+def favorite():
+    favorite = request.form.get("recipe_to_favorite")
+    print(favorite)
+    return render_template('index.html',favorite=favorite)     
+
+
 @app.route('/',methods=['GET', 'POST'])
 @login_required
 def home():

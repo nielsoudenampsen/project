@@ -1,3 +1,4 @@
+import json
 import os
 import requests
 import urllib.parse
@@ -40,17 +41,25 @@ def lookup_recipes(start,size,tag,query):
             'x-rapidapi-key': "cbc9c244d1mshbc7142f4dcf7d59p15a492jsn04e851823481",
             'x-rapidapi-host': "tasty.p.rapidapi.com"
             }
-
-        response = requests.request("GET", url, headers=headers, params=querystring).json()
-        print(db.execute('SELECT * FROM recipes'))
-        db.execute('INSERT INTO recipes (search,json) VALUES ?,?',query,response)
+        exist = db.execute('SELECT search FROM recipes WHERE search = ?',query)
+        
+        if len(exist) != 1:
+            response = requests.request("GET", url, headers=headers, params=querystring)
+            cache = json.dumps(response.json())
+            db.execute('INSERT INTO recipes (search,json) VALUES (?,?)',query,cache)
+            response = response.json()
+        else:
+            response = db.execute('SELECT json FROM recipes WHERE search = ?',query)
+            response = response[0]['json']
+            response = json.loads(response)
 
         recipes = []
         for i in range(len(response["results"])):
             recipes.append({
                 "description": response["results"][i]["description"],
                 "name": response["results"][i]["name"],
-                "img": response["results"][i]["thumbnail_url"]
+                "img": response["results"][i]["thumbnail_url"],
+                "id": response["results"][i]["id"]
                 })
 
     except requests.RequestException:
