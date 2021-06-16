@@ -7,7 +7,7 @@ from flask_session import Session
 from cs50 import SQL
 from tempfile import mkdtemp
 from werkzeug.security import check_password_hash, generate_password_hash, pbkdf2_bin
-from helpers import login_required,eur, lookup_recipe,lookup_recipes
+from helpers import login_required,eur,lookup_recipes
 
 
 app = Flask(__name__)
@@ -37,7 +37,6 @@ def home():
     if request.method == "POST":
         search = request.form.get('search')
         recipes = lookup_recipes(0,1000,"",str(search))
-        pprint(recipes)
     else:
         recipes = None
     
@@ -48,10 +47,10 @@ def home():
 def recept_toevoegen():
     return render_template('recept_toevoegen.html')
     
-@app.route('/mijn_recepten',methods=['GET', 'POST'])
+@app.route('/my_recipes',methods=['GET', 'POST'])
 @login_required
-def mijn_recepten():
-    return render_template('mijn_recepten.html')
+def my_recipes():
+    return render_template('my_recipes.html')
     
 @app.route('/stats',methods=['GET', 'POST'])
 @login_required
@@ -92,7 +91,7 @@ def login():
             return render_template('login.html')
 
         # Query database for username
-        rows = db.execute("SELECT * FROM gebruikers WHERE naam = ?", username)
+        rows = db.execute("SELECT * FROM users WHERE name = ?", username)
 
         # Ensure username exists and password is correct
         if len(rows) != 1 or not check_password_hash(rows[0]["hash"], password):
@@ -132,13 +131,16 @@ def register():
             flash("Password does not match","danger")
             return render_template('register.html')
 
-        rows = db.execute("SELECT * FROM gebruikers WHERE naam = ?",username)
+        rows = db.execute("SELECT * FROM users WHERE name = ?",username)
         if len(rows) != 0:
             flash("Username already exist","danger")
             return redirect('/register')
 
-        db.execute("INSERT INTO gebruikers (naam,hash) VALUES (?,?)",username,generate_password_hash(password=password,method='pbkdf2:sha256',salt_length=8))
+        db.execute("INSERT INTO users (name,hash) VALUES (?,?)",username,generate_password_hash(password=password,method='pbkdf2:sha256',salt_length=8))
         flash("Registerd succesfully","success")
         return redirect("/")
     else:
         return render_template('register.html')
+
+if __name__ == '__main__':
+    app.run(debug=True)

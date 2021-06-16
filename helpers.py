@@ -2,9 +2,12 @@ import os
 import requests
 import urllib.parse
 from pprint import pprint
+from cs50 import SQL
 
 from flask import redirect,session
 from functools import wraps
+
+db = SQL("sqlite:///recipe.db")
 
 def eur(num):
     """Format value as EUR."""
@@ -23,39 +26,6 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-def lookup_recipe(recipe):
-    """Look up quote for symbol."""
-
-    # Contact API
-    try:
-        api_key = os.environ.get("API_KEY")
-        url = f"https://tasty.p.rapidapi.com/recipes/list"
-
-        querystring = {"prefix":recipe}
-
-        headers = {
-                    'x-rapidapi-key': "fc22b0d256mshde2ff2b2d8a7be7p17c446jsn25f2a74c339d",
-                    'x-rapidapi-host': "tasty.p.rapidapi.com"
-                  }
-        response = requests.request("GET", url, headers=headers, params=querystring)
-        
-        
-        response = requests.get(url)
-        response.raise_for_status()
-    except requests.RequestException:
-        return None
-
-    # Parse response
-    # try:
-    #     quote = response.json()
-    #     return {
-    #         "name": quote["companyName"],
-    #         "price": float(quote["latestPrice"]),
-    #         "symbol": quote["symbol"]
-    #     }
-    # except (KeyError, TypeError, ValueError):
-    #     return None
-
 def lookup_recipes(start,size,tag,query):
     """Look up quote for symbol."""
     try:
@@ -71,9 +41,10 @@ def lookup_recipes(start,size,tag,query):
             'x-rapidapi-host': "tasty.p.rapidapi.com"
             }
 
-        response = requests.request("GET", url, headers=headers, params=querystring)
-        response = response.json()
-        # pprint(response)
+        response = requests.request("GET", url, headers=headers, params=querystring).json()
+        print(db.execute('SELECT * FROM recipes'))
+        db.execute('INSERT INTO recipes (search,json) VALUES ?,?',query,response)
+
         recipes = []
         for i in range(len(response["results"])):
             recipes.append({
