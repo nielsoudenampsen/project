@@ -11,7 +11,7 @@ img {
 .card-title{
     height: 46px;
 }
-a.btn{
-        display: flex;
-        justify-content: center;
+.favorite-card{
+    margin: auto;
+    display: block;
 }

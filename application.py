@@ -32,7 +32,7 @@ if not os.environ.get("API_KEY"):
 @app.route('/to_favorite',methods=['POST'])
 @login_required
 def favorite():
-    favorite = request.form.get("recipe_to_favorite")
+    
     print(favorite)
     return render_template('index.html',favorite=favorite)     
 
@@ -41,14 +41,16 @@ def favorite():
 @login_required
 def home():
     
-    # recipes = lookup_recipes(0,10,"","bolognese")
     if request.method == "POST":
+        favorite = request.form.get("recipe_to_favorite")
+        print(favorite)
         search = request.form.get('search')
         recipes = lookup_recipes(0,1000,"",str(search))
     else:
         recipes = None
+        favorite = None
     
-    return render_template('index.html',recipes=recipes)
+    return render_template('index.html',recipes=recipes,favorite=favorite)
 
 @app.route('/toevoegen',methods=['GET', 'POST'])
 @login_required
