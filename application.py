@@ -30,13 +30,19 @@ db = SQL("sqlite:///recipe.db")
 if not os.environ.get("API_KEY"):
     raise RuntimeError("API_KEY not set")
 
+@app.route('/to_favorite',methods=['POST'])
+@login_required
+def to_favorite():
+     session["favorites"].append(request.form.get("recipe_to_favorite"))
+     
+
 @app.route('/',methods=['GET', 'POST'])
 @login_required
 def home():
     
     if request.method == "POST":
-        session["favorites"].append(request.form.get("recipe_to_favorite"))
-        db.execute("INSERT INTO users VALUES ()")
+       
+        db.execute("UPDATE users SET favorites = ? WHERE id = ?",json.dumps(session["favorites"]),session["user_id"])
         search = request.form.get('search')
         recipes = lookup_recipes(0,1000,"",str(search))
     else:
@@ -102,7 +108,10 @@ def login():
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
-        session["favorites"] = []
+        try:
+            session["favorites"] = json.loads(db.execute("SELECT favorites FROM users WHERE id = ?",session["user_id"])[0]["favorites"])
+        except:
+            session["favorites"] = []
 
         # Redirect user to home page
         flash("Welcome, {}".format(username),"success")
