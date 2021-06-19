@@ -8,7 +8,18 @@ from cs50 import SQL
 from flask import redirect,session
 from functools import wraps
 
+from sqlalchemy.sql.expression import false
+
 db = SQL("sqlite:///recipe.db")
+
+def isInList(search,list):
+    """Checks if item is in the dict"""
+    for item in list:
+        if str(search) == str(item):
+            print(item)
+            return True
+    else:
+        return False
 
 def eur(num):
     """Format value as EUR."""
