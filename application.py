@@ -40,13 +40,10 @@ def to_favorite():
 @login_required
 def home():
     
-    if request.method == "POST":
-       
-        db.execute("UPDATE users SET favorites = ? WHERE id = ?",json.dumps(session["favorites"]),session["user_id"])
-        search = request.form.get('search')
-        recipes = lookup_recipes(0,1000,"",str(search))
-    else:
-        recipes = None
+    db.execute("UPDATE users SET favorites = ? WHERE id = ?",json.dumps(session["favorites"]),session["user_id"])
+    search = request.args.get('search')
+    recipes = lookup_recipes(0,1000,"",str(search))
+    session["favorites"].append(request.form.get("recipe_to_favorite"))
     
     return render_template('index.html',recipes=recipes,favorites=session["favorites"])
 
@@ -69,8 +66,6 @@ def stats():
 def logout():
     session.clear()
     flash("Logged out succesful","success")
-    # for msg in get_flashed_messages():
-    #     print(msg)
     return render_template('login.html')
 
 

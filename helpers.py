@@ -16,7 +16,6 @@ def isInList(search,list):
     """Checks if item is in the dict"""
     for item in list:
         if str(search) == str(item):
-            print(item)
             return True
     else:
         return False
@@ -44,6 +43,8 @@ def lookup_recipes(start,size,tag,query):
         if query == None:
             return None
         if query == "":
+            return None
+        if query == "None":
             return None
         api_key = os.environ.get("API_KEY")
 
