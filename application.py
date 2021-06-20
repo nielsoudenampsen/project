@@ -35,11 +35,16 @@ if not os.environ.get("API_KEY"):
 @login_required
 def home():
     if request.method == "POST":
-        favorite = request.form.get("recipe_to_favorite")
+        favorite = request.form.get("favorite_id")
         if favorite in session["favorites"]:
-            session["favorites"].remove(request.form.get("recipe_to_favorite"))
+            session["favorites"].pop(favorite)
         else:
-            session["favorites"].append(request.form.get("recipe_to_favorite"))
+            session["favorites"][favorite] = {
+                "description": request.form.get("favorite_description"),
+                "name": request.form.get("favorite_name"),
+                "img": request.form.get("favorite_img"),
+                "id": request.form.get("favorite_id")
+                }
 
         db.execute("UPDATE users SET favorites = ? WHERE id = ?",json.dumps(session["favorites"]),session["user_id"])
         return redirect(request.referrer)    
@@ -53,8 +58,9 @@ def home():
 @app.route('/my_recipes',methods=['GET', 'POST'])
 @login_required
 def my_recipes():
-    recipes = json.loads(db.execute("SELECT favorites FROM users WHERE id = ?",session["user_id"])[0]["favorites"])
-    return render_template('my_recipes.html',recipes=recipes)
+    favorites = json.loads(db.execute("SELECT favorites FROM users WHERE id = ?",session["user_id"])[0]["favorites"])
+    print(favorites)
+    return render_template('my_recipes.html',favorites=favorites)
     
 @app.route('/stats',methods=['GET', 'POST'])
 @login_required
@@ -105,7 +111,7 @@ def login():
         try:
             session["favorites"] = json.loads(db.execute("SELECT favorites FROM users WHERE id = ?",session["user_id"])[0]["favorites"])
         except:
-            session["favorites"] = []
+            session["favorites"] = {}
             db.execute("UPDATE users SET favorites = ? WHERE id = ?",json.dumps(session["favorites"]),session["user_id"])
             
 
