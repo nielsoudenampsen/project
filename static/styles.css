@@ -11,7 +11,24 @@ img {
 .card-title{
     height: 46px;
 }
-.favorite-card{
+.center{
     margin: auto;
     display: block;
 }
+
+.spacer{
+    height: 42px;
+}
+
+.card{
+    margin:0.5rem;
+    margin-top: 0rem;
+}
+.input.form-control{
+    line-height: 56px;
+}
+
+a {
+    color: inherit;
+    text-decoration: inherit;
+  }

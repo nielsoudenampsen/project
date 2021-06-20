@@ -81,4 +81,18 @@ def lookup_recipes(start,size,tag,query):
         return None
 
     return recipes
-    
+
+def recipe_detail(id):
+    url = "https://tasty.p.rapidapi.com/recipes/detail"
+
+    querystring = {"id":str(id)}
+
+    headers = {
+        'x-rapidapi-key': "9317977781msh0550fead80fa552p1a738bjsnb061e098cd8f",
+        'x-rapidapi-host': "tasty.p.rapidapi.com"
+        }
+
+    response = requests.request("GET", url, headers=headers, params=querystring)
+
+    return response.text
+        
