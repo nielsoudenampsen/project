@@ -30,32 +30,31 @@ db = SQL("sqlite:///recipe.db")
 if not os.environ.get("API_KEY"):
     raise RuntimeError("API_KEY not set")
 
-@app.route('/to_favorite',methods=['POST'])
-@login_required
-def to_favorite():
-     session["favorites"].append(request.form.get("recipe_to_favorite"))
-     
 
 @app.route('/',methods=['GET', 'POST'])
 @login_required
 def home():
-    
-    db.execute("UPDATE users SET favorites = ? WHERE id = ?",json.dumps(session["favorites"]),session["user_id"])
-    search = request.args.get('search')
-    recipes = lookup_recipes(0,1000,"",str(search))
-    session["favorites"].append(request.form.get("recipe_to_favorite"))
-    
-    return render_template('index.html',recipes=recipes,favorites=session["favorites"])
+    if request.method == "POST":
+        favorite = request.form.get("recipe_to_favorite")
+        if favorite in session["favorites"]:
+            session["favorites"].remove(request.form.get("recipe_to_favorite"))
+        else:
+            session["favorites"].append(request.form.get("recipe_to_favorite"))
 
-@app.route('/toevoegen',methods=['GET', 'POST'])
-@login_required
-def recept_toevoegen():
-    return render_template('recept_toevoegen.html')
+        db.execute("UPDATE users SET favorites = ? WHERE id = ?",json.dumps(session["favorites"]),session["user_id"])
+        return redirect(request.referrer)    
+    else:
+        favorites = json.loads(db.execute("SELECT favorites FROM users WHERE id = ?",session["user_id"])[0]["favorites"])
+        search = request.args.get('search')
+        recipes = lookup_recipes(0,1000,"",str(search))
+        return render_template('index.html',recipes=recipes,favorites=favorites)
+
     
 @app.route('/my_recipes',methods=['GET', 'POST'])
 @login_required
 def my_recipes():
-    return render_template('my_recipes.html')
+    recipes = json.loads(db.execute("SELECT favorites FROM users WHERE id = ?",session["user_id"])[0]["favorites"])
+    return render_template('my_recipes.html',recipes=recipes)
     
 @app.route('/stats',methods=['GET', 'POST'])
 @login_required
@@ -107,6 +106,9 @@ def login():
             session["favorites"] = json.loads(db.execute("SELECT favorites FROM users WHERE id = ?",session["user_id"])[0]["favorites"])
         except:
             session["favorites"] = []
+            db.execute("UPDATE users SET favorites = ? WHERE id = ?",json.dumps(session["favorites"]),session["user_id"])
+            
+
 
         # Redirect user to home page
         flash("Welcome, {}".format(username),"success")

@@ -31,7 +31,7 @@
   <div class="card-body">
     <h6 class="card-title">{{recipe["name"]}}</h6>
     <p class="card-text"></p>
-    <form class="form" action="" method="POST">
+    <form class="form" action="/" method="POST">
     <input type="number" name="recipe_to_favorite" hidden value='{{recipe["id"]}}'>
     {% if recipe.id|isInList(favorites) %}
     <input class="favorite-card" type="image" src="/static/assets/star-outline-yellow.svg">

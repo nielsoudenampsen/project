@@ -53,7 +53,7 @@ def lookup_recipes(start,size,tag,query):
         querystring = {"from":str(start),"size":str(size),"tags":tag,"q":query}
 
         headers = {
-            'x-rapidapi-key': "cbc9c244d1mshbc7142f4dcf7d59p15a492jsn04e851823481",
+            'x-rapidapi-key': {api_key},
             'x-rapidapi-host': "tasty.p.rapidapi.com"
             }
         exist = db.execute('SELECT search FROM recipes WHERE search = ?',query)
