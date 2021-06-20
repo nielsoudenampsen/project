@@ -14,33 +14,27 @@
 {% endblock %}
 
 {% block content %}
-
-<div class="row justify-content-around">
-  <h2>My favorite recipes</h2>
-  {% if recipes is not none %}
-    {% for recipe in recipes %}
+  <div class="row justify-content-center">
+    <h2>My favorite recipes</h2>
+  </div>
+  <div class="d-flex justify-content-between flex-wrap">
+    {% for key, value in favorites.items() %}
       <div class="card" style="width: 16rem;">
-        <img class="card-img-top" src="{{recipe['img']}}" alt="Card image cap">
+        <img class="card-img-top" src="{{value['img']}}" alt="Card image cap">
         <div class="card-body">
-          <h6 class="card-title">{{recipe["name"]}}</h6>
+          <h6 class="card-title">{{value["name"]}}</h6>
           <p class="card-text"></p>
           <form class="form" action="/" method="POST">
-          <input type="number" name="recipe_to_favorite" hidden value='{{recipe["id"]}}'>
-          {% if recipe.id|isInList(favorites) %}
+          <input type="number" name="favorite_id" hidden value='{{value["id"]}}'>
+          <input type="text" name="favorite_img" hidden value='{{value["img"]}}'>
+          <input type="text" name="favorite_name" hidden value='{{value["name"]}}'>
+          <input type="text" name="favorite_description" hidden value='{{value["description"]}}'>
           <input class="favorite-card" type="image" src="/static/assets/star-outline-yellow.svg">
-          {% else %}
-          <input class="favorite-card" type="image" src="/static/assets/star-outline-grey.svg">
-          {% endif %}
           </input>
         </form>
         </div>
       </div>
     {% endfor %}
-  {% else %}
-</div>
-  
-  
-  {% endif %}
-	
+  </div>
 	
 {% endblock %}
