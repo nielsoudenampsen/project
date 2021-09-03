@@ -42,7 +42,12 @@ def login_required(f):
 def lookup_recipes(start,size,tag,query):
     """Look up quote for symbol."""
     try:
-
+        if query == None:
+            return None
+        if query == "":
+            return None
+        if query == "None":
+            return None
         api_key = os.environ.get("API_KEY")
 
         url = "https://tasty.p.rapidapi.com/recipes/list"
@@ -50,7 +55,7 @@ def lookup_recipes(start,size,tag,query):
         querystring = {"from":str(start),"size":str(size),"tags":tag,"q":query}
 
         headers = {
-            'x-rapidapi-key': "cbc9c244d1mshbc7142f4dcf7d59p15a492jsn04e851823481",
+            'x-rapidapi-key': {api_key},
             'x-rapidapi-host': "tasty.p.rapidapi.com"
             }
         exist = db.execute('SELECT search FROM recipes WHERE search = ?',query)
@@ -78,4 +83,18 @@ def lookup_recipes(start,size,tag,query):
         return None
     
     return recipes
-    
+
+def recipe_detail(id):
+    url = "https://tasty.p.rapidapi.com/recipes/detail"
+
+    querystring = {"id":str(id)}
+
+    headers = {
+        'x-rapidapi-key': "9317977781msh0550fead80fa552p1a738bjsnb061e098cd8f",
+        'x-rapidapi-host': "tasty.p.rapidapi.com"
+        }
+
+    response = requests.request("GET", url, headers=headers, params=querystring)
+
+    return response.text
+        

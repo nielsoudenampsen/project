@@ -30,9 +30,19 @@ db = SQL("sqlite:///recipe.db")
 # if not os.environ.get("API_KEY"):
 #     raise RuntimeError("API_KEY not set")
 
+@app.route('/recipe/<id>',methods=['GET', 'POST'])
+@login_required
+def recipe_detail(id):
+    id = request.args.get("id")
+    details = recipe_detail(id)
+    print(details)
+    return redirect("/")
+
+
 @app.route('/',methods=['GET', 'POST'])
 @login_required
 def home():
+<<<<<<< HEAD
     
     if request.method == "GET":
         search = request.args.get('search')
@@ -58,11 +68,35 @@ def favorite():
 @login_required
 def recept_toevoegen():
     return render_template('recept_toevoegen.html')
+=======
+    if request.method == "POST":
+        favorite = request.form.get("favorite_id")
+        if favorite in session["favorites"]:
+            session["favorites"].pop(favorite)
+        else:
+            session["favorites"][favorite] = {
+                "description": request.form.get("favorite_description"),
+                "name": request.form.get("favorite_name"),
+                "img": request.form.get("favorite_img"),
+                "id": request.form.get("favorite_id")
+                }
+
+        db.execute("UPDATE users SET favorites = ? WHERE id = ?",json.dumps(session["favorites"]),session["user_id"])
+        return redirect(request.referrer)    
+    else:
+        favorites = json.loads(db.execute("SELECT favorites FROM users WHERE id = ?",session["user_id"])[0]["favorites"])
+        search = request.args.get('search')
+        recipes = lookup_recipes(0,1000,"",str(search))
+        return render_template('index.html',recipes=recipes,favorites=favorites)
+
+>>>>>>> d43b38f82540124119503304a0597c969660cf38
     
 @app.route('/my_recipes',methods=['GET', 'POST'])
 @login_required
 def my_recipes():
-    return render_template('my_recipes.html')
+    favorites = json.loads(db.execute("SELECT favorites FROM users WHERE id = ?",session["user_id"])[0]["favorites"])
+    print(favorites)
+    return render_template('my_recipes.html',favorites=favorites)
     
 @app.route('/stats',methods=['GET', 'POST'])
 @login_required
@@ -73,8 +107,6 @@ def stats():
 def logout():
     session.clear()
     flash("Logged out succesful","success")
-    # for msg in get_flashed_messages():
-    #     print(msg)
     return render_template('login.html')
 
 
@@ -112,8 +144,18 @@ def login():
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
+<<<<<<< HEAD
         session["favorites"] = []
         session["recipes"] = []
+=======
+        try:
+            session["favorites"] = json.loads(db.execute("SELECT favorites FROM users WHERE id = ?",session["user_id"])[0]["favorites"])
+        except:
+            session["favorites"] = {}
+            db.execute("UPDATE users SET favorites = ? WHERE id = ?",json.dumps(session["favorites"]),session["user_id"])
+            
+
+>>>>>>> d43b38f82540124119503304a0597c969660cf38
 
         # Redirect user to home page
         flash("Welcome, {}".format(username),"success")
