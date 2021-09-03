@@ -57,11 +57,12 @@ def home():
 @app.route('/favorite',methods=['GET', 'POST'])
 @login_required
 def favorite():
-    favorites = session["favorites"].append(request.form.get("recipe_to_favorite"))
-    print(request.form.get("recipe_to_favorite"))
-    recipes = session["recipes"][-1]
+    favorite = request.form.get("recipe_to_favorite")
+    if favorite in session["favorites"]:
+        session["favorites"].remove(favorite)
+    else:
+        session["favorites"].append(favorite)
     return redirect(request.referrer)
-    return render_template("index.html",recipes=recipes,favorites=favorites)
 
 @app.route('/toevoegen',methods=['GET', 'POST'])
 @login_required
@@ -71,8 +72,7 @@ def recept_toevoegen():
 @app.route('/my_recipes',methods=['GET', 'POST'])
 @login_required
 def my_recipes():
-    favorites = json.loads(db.execute("SELECT favorites FROM users WHERE id = ?",session["user_id"])[0]["favorites"])
-    print(favorites)
+    favorites = session["favorites"]
     return render_template('my_recipes.html',favorites=favorites)
     
 @app.route('/stats',methods=['GET', 'POST'])

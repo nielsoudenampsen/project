@@ -21,17 +21,17 @@
     <div class="spacer"></div>
   </div>
   <div class="row justify-content-center">
-    {% for key, value in favorites.items() %}
+    {% for fav in favorites %}
       <div class="card" style="width: 16rem;">
-        <img class="card-img-top" src="{{value['img']}}" alt="Card image cap">
+        <img class="card-img-top" src="{{fav['img']}}" alt="Card image cap">
         <div class="card-body">
-          <h6 class="card-title">{{value["name"]}}</h6>
+          <h6 class="card-title">{{fav["name"]}}</h6>
           <p class="card-text"></p>
           <form class="form" action="/" method="POST">
-          <input type="number" name="favorite_id" hidden value='{{value["id"]}}'>
-          <input type="text" name="favorite_img" hidden value='{{value["img"]}}'>
-          <input type="text" name="favorite_name" hidden value='{{value["name"]}}'>
-          <input type="text" name="favorite_description" hidden value='{{value["description"]}}'>
+          <input type="number" name="favorite_id" value='{{fav}}'>
+          <input type="text" name="favorite_img" hidden value='{{fav["img"]}}'>
+          <input type="text" name="favorite_name" hidden value='{{fav["name"]}}'>
+          <input type="text" name="favorite_description" hidden value='{{fav["description"]}}'>
           <input class="center" type="image" src="/static/assets/star-outline-yellow.svg">
           </input>
         </form>
