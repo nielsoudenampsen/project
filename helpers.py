@@ -14,9 +14,10 @@ db = SQL("sqlite:///recipe.db")
 
 def isInList(search,list):
     """Checks if item is in the dict"""
+    if search == None:
+        return False
     for item in list:
         if str(search) == str(item):
-            print(item)
             return True
     else:
         return False
@@ -75,6 +76,6 @@ def lookup_recipes(start,size,tag,query):
 
     except requests.RequestException:
         return None
-
+    
     return recipes
     
