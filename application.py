@@ -34,7 +34,7 @@ db = SQL("sqlite:///recipe.db")
 @login_required
 def recipe_detail(id):
     page_id = id
-    return render_template("/recipe_detail",id=page_id)
+    return render_template("recipe_detail.html",page_id=page_id)
 
 
 @app.route('/',methods=['GET', 'POST'])

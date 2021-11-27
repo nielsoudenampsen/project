@@ -42,6 +42,8 @@ def login_required(f):
 def lookup_recipes(start,size,tag,query):
     """Look up quote for symbol."""
     try:
+        if (query == "None" or query == ""):
+            return None
 
         api_key = os.environ.get("API_KEY")
 
