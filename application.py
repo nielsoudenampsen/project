@@ -33,45 +33,39 @@ db = SQL("sqlite:///recipe.db")
 @app.route('/recipe/<id>',methods=['GET', 'POST'])
 @login_required
 def recipe_detail(id):
-    pageid = id
-    
-    return render_template("recipe_detail.html", id=pageid)
+    page_id = id
+    return render_template("/recipe_detail",id=page_id)
 
 
 @app.route('/',methods=['GET', 'POST'])
 @login_required
 def home():
-    
-    if request.method == "GET":
-        search = request.args.get('search')
-        if search != None:
-            recipes = lookup_recipes(0,1000,"",str(search))
+    if request.method == "POST":
+        favorite = request.form.get("favorite_id")
+        if favorite in session["favorites"]:
+            session["favorites"].pop(favorite)
         else:
-            recipes = None
-    else:
-        recipes = None
-    session["recipes"].append(recipes)
-    return render_template('index.html',recipes=recipes,favorites=session["favorites"])
+            session["favorites"][favorite] = {
+                "description": request.form.get("favorite_description"),
+                "name": request.form.get("favorite_name"),
+                "img": request.form.get("favorite_img"),
+                "id": request.form.get("favorite_id")
+                }
 
-@app.route('/favorite',methods=['GET', 'POST'])
-@login_required
-def favorite():
-    favorite = request.form.get("recipe_to_favorite")
-    if favorite in session["favorites"]:
-        session["favorites"].remove(favorite)
+        db.execute("UPDATE users SET favorites = ? WHERE id = ?",json.dumps(session["favorites"]),session["user_id"])
+        return redirect(request.referrer)    
     else:
-        session["favorites"].append(favorite)
-    return redirect(request.referrer)
+        favorites = json.loads(db.execute("SELECT favorites FROM users WHERE id = ?",session["user_id"])[0]["favorites"])
+        search = request.args.get('search')
+        recipes = lookup_recipes(0,1000,"",str(search))
+        return render_template('index.html',recipes=recipes,favorites=favorites)
 
-@app.route('/toevoegen',methods=['GET', 'POST'])
-@login_required
-def recept_toevoegen():
-    return render_template('recept_toevoegen.html')
     
 @app.route('/my_recipes',methods=['GET', 'POST'])
 @login_required
 def my_recipes():
-    favorites = session["favorites"]
+    favorites = json.loads(db.execute("SELECT favorites FROM users WHERE id = ?",session["user_id"])[0]["favorites"])
+    print(favorites)
     return render_template('my_recipes.html',favorites=favorites)
     
 @app.route('/stats',methods=['GET', 'POST'])
@@ -120,8 +114,13 @@ def login():
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
-        session["favorites"] = []
-        session["recipes"] = []
+        try:
+            session["favorites"] = json.loads(db.execute("SELECT favorites FROM users WHERE id = ?",session["user_id"])[0]["favorites"])
+        except:
+            session["favorites"] = {}
+            db.execute("UPDATE users SET favorites = ? WHERE id = ?",json.dumps(session["favorites"]),session["user_id"])
+            
+
 
         # Redirect user to home page
         flash("Welcome, {}".format(username),"success")
