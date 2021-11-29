@@ -29,7 +29,13 @@
 <div class="card" style="width: 16rem;">
   <img class="card-img-top" src="{{recipe['img']}}" alt="Card image cap">
   <div class="card-body">
-    <a href="/recipe/{{recipe['id']}}"><h6 class="card-title">{{recipe["name"]}}</h6></a>
+    <form action="/recipe/{{recipe['id']}}" method="post">
+      <input type="text" hidden name="description" value="{{recipe['description']}}">
+      <input type="text" hidden name="name" value="{{recipe['name']}}">
+      <input type="text" hidden name="img" value="{{recipe['img']}}">
+      <button type="submit" class="link-button" value="{{recipe['name']}}">{{recipe['name']}}</button>
+    </form>
+    
     <p class="card-text"></p>
     <form class="form" action="/" method="POST">
     <input type="number" name="favorite_id" hidden value='{{recipe["id"]}}'>

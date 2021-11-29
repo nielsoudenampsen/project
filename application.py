@@ -33,8 +33,11 @@ db = SQL("sqlite:///recipe.db")
 @app.route('/recipe/<id>',methods=['GET', 'POST'])
 @login_required
 def recipe_detail(id):
-    page_id = id
-    return render_template("recipe_detail.html",page_id=page_id)
+    name = request.form.get("name")
+    img = request.form.get("img")
+    description = request.form.get("description")
+    print(id,img,description,name)
+    return render_template("recipe_detail.html",name=name,img=img,description=description,id=id)
 
 
 @app.route('/',methods=['GET', 'POST'])
@@ -65,7 +68,6 @@ def home():
 @login_required
 def my_recipes():
     favorites = json.loads(db.execute("SELECT favorites FROM users WHERE id = ?",session["user_id"])[0]["favorites"])
-    print(favorites)
     return render_template('my_recipes.html',favorites=favorites)
     
 @app.route('/stats',methods=['GET', 'POST'])
