@@ -61,7 +61,7 @@ def home():
         favorites = json.loads(db.execute("SELECT favorites FROM users WHERE id = ?",session["user_id"])[0]["favorites"])
         search = request.args.get('search')
         recipes = lookup_recipes(0,1000,"",str(search))
-        return render_template('index.html',recipes=recipes,favorites=favorites)
+        return render_template('index.html',recipes=recipes,favorites=favorites,search=search)
 
     
 @app.route('/my_recipes',methods=['GET', 'POST'])

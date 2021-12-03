@@ -37,14 +37,12 @@ a {
     display: inline;
   }
   
-  .link-button {
+   .link-button {
     background: none;
     border: none;
-    color: blue;
-    text-decoration: underline;
+    font-weight: bold;
     cursor: pointer;
     font-size: 1em;
-    font-family: serif;
   }
   .link-button:focus {
     outline: none;
@@ -52,3 +50,17 @@ a {
   .link-button:active {
     color:red;
   }
+  h6{
+    color: grey;
+  }
+  
+  footer {
+    position:absolute;
+    bottom:0;
+    width:100%;
+    height:60px;   /* Height of the footer */
+    background:#6cf;
+ }
+ #content{
+   padding-bottom: 60px;
+ }

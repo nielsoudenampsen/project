@@ -78,6 +78,9 @@ def lookup_recipes(start,size,tag,query):
 
     except requests.RequestException:
         return None
-    
+
+    if(len(recipes) == 0):
+        return None
+
     return recipes
     
