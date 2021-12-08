@@ -7,7 +7,7 @@ from flask_session import Session
 from cs50 import SQL
 from tempfile import mkdtemp
 from werkzeug.security import check_password_hash, generate_password_hash, pbkdf2_bin
-from helpers import login_required,eur,lookup_recipes,isInList
+from helpers import login_required,eur,lookup_recipes,isInList,take
 
 
 app = Flask(__name__)
@@ -17,6 +17,7 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 # Custom filter
 app.jinja_env.filters["eur"] = eur
 app.jinja_env.filters["isInList"] = isInList
+app.jinja_env.filters["take"] = take
 
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_FILE_DIR"] = mkdtemp()
@@ -61,7 +62,8 @@ def home():
         favorites = json.loads(db.execute("SELECT favorites FROM users WHERE id = ?",session["user_id"])[0]["favorites"])
         search = request.args.get('search')
         recipes = lookup_recipes(0,1000,"",str(search))
-        return render_template('index.html',recipes=recipes,favorites=favorites,search=search)
+        top3_favorites = list(favorites.items())[0][1].get('img')
+        return render_template('index.html',recipes=recipes,favorites=favorites,search=search,top3_favorites=top3_favorites)
 
     
 @app.route('/my_recipes',methods=['GET', 'POST'])

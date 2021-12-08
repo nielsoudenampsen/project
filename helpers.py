@@ -4,6 +4,8 @@ import requests
 import urllib.parse
 from pprint import pprint
 from cs50 import SQL
+from itertools import islice
+
 
 from flask import redirect,session
 from functools import wraps
@@ -25,6 +27,10 @@ def isInList(item,list):
 def eur(num):
     """Format value as EUR."""
     return f"${num:,.2f}"
+
+def take(n, iterable):
+    """Return first n items of the iterable as a list"""
+    return list(islice(iterable, n))
 
 def login_required(f):
     """
