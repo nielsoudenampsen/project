@@ -7,6 +7,12 @@ img {
     height: 150px;
     object-fit: cover;
 }
+img.d-block{
+  float: left;
+    width:  1000px;
+    height: 500px;
+    object-fit: cover;
+}
 
 .card-title{
     height: 46px;
@@ -53,4 +59,13 @@ a {
   h6{
     color: grey;
   }
+  .carousel-caption{
+    top: 0;
+    bottom: auto;
+    background-color: rgba(100, 100, 100, 0.7);
+    color: white;
+  }
+
+
+
   

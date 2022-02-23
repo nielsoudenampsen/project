@@ -28,6 +28,10 @@ def eur(num):
     """Format value as EUR."""
     return f"${num:,.2f}"
 
+def first(dict):
+    """Get first value of a dict."""
+    return next(iter(dict))
+
 def take(n, iterable):
     """Return first n items of the iterable as a list"""
     return list(islice(iterable, n))
