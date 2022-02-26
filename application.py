@@ -62,7 +62,7 @@ def home():
         favorites = json.loads(db.execute("SELECT favorites FROM users WHERE id = ?",session["user_id"])[0]["favorites"])
         search = request.args.get('search')
         recipes = lookup_recipes(0,1000,"",str(search))
-        top3_favorites = list(favorites.items())[0][1].get('img')
+        top3_favorites = list(favorites.items())[0][1].get('img') if favorites == None else None
         return render_template('index.html',recipes=recipes,favorites=favorites,search=search,top3_favorites=top3_favorites)
 
     
@@ -82,6 +82,35 @@ def logout():
     session.clear()
     flash("Logged out succesful","success")
     return render_template('login.html')
+
+@app.route('/change-credentials',methods=['GET','POST'])
+def change_credentials():
+    if request.method == "POST":
+        password = request.form.get('password')
+        confirm = request.form.get('confirm')
+
+        if not password:
+            flash("You must provide a password","danger")
+            return redirect('/change-credentials')
+
+        if not confirm:
+            flash("You must confirm the password","danger")
+            return redirect('/change-credentials')
+        
+        if password != confirm:
+            flash("Password does not match","danger")
+            return redirect('/change-credentials')
+
+        rows = db.execute("SELECT * FROM users WHERE name = ?",username)
+        if len(rows) != 0:
+            flash("Username already exist","danger")
+            return redirect('/change-credentials')
+
+        db.execute("INSERT INTO users (name,hash) VALUES (?,?)",username,generate_password_hash(password=password,method='pbkdf2:sha256',salt_length=8))
+        flash("Changed credentials succesfully","success")
+        return redirect("/")
+    else:
+        return render_template('change-credentials.html')
 
 
 @app.route('/login',methods=['GET', 'POST'])
