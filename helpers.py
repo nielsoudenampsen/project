@@ -76,7 +76,6 @@ def lookup_recipes(start,size,tag,query):
             response = db.execute('SELECT json FROM recipes WHERE search = ?',query)
             response = response[0]['json']
             response = json.loads(response)
-
         recipes = []
         for i in range(len(response["results"])):
             recipes.append({
