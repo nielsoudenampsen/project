@@ -6,7 +6,7 @@ from flask.helpers import get_flashed_messages
 from flask_session import Session
 from cs50 import SQL
 from tempfile import mkdtemp
-from werkzeug.security import check_password_hash, generate_password_hash, pbkdf2_bin
+from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import login_required,eur,lookup_recipes,isInList,take
 
 
@@ -31,6 +31,7 @@ db = SQL("sqlite:///recipe.db")
 # if not os.environ.get("API_KEY"):
 #     raise RuntimeError("API_KEY not set")
 
+
 @app.route('/recipe/<id>',methods=['GET', 'POST'])
 @login_required
 def recipe_detail(id):
@@ -44,28 +45,42 @@ def recipe_detail(id):
 @app.route('/',methods=['GET', 'POST'])
 @login_required
 def home():
-    if request.method == "POST":
-        favorite = request.form.get("favorite_id")
-        if favorite in session["favorites"]:
-            session["favorites"].pop(favorite)
-        else:
-            session["favorites"][favorite] = {
-                "description": request.form.get("favorite_description"),
-                "name": request.form.get("favorite_name"),
-                "img": request.form.get("favorite_img"),
-                "id": request.form.get("favorite_id")
-                }
+    favorites = json.loads(db.execute("SELECT favorites FROM users WHERE id = ?",session["user_id"])[0]["favorites"])
+    search = request.args.get('search')
+    recipes = lookup_recipes(0,1000,"",str(search))
+    #top3_favorites = list(favorites.items())[0][1].get('img')
+    return render_template('index.html',recipes=recipes,favorites=favorites,search=search,)#top3_favorites=top3_favorites)
 
+@app.route('/favorite/<id>',methods=['GET','POST'])
+@login_required
+def favorite(id):
+    if request.method == "POST":
+        favorite_id = request.json['favorite_id']
+        favorite_name = request.json['favorite_name']
+        favorite_img = request.json['favorite_img']
+        favorite_description = request.json['favorite_description']
+
+
+        if id in session["favorites"]:
+            
+            print()
+            print("delete id ")
+            print(session["favorites"])
+            print(session["favorites"][id])
+            session["favorites"].pop(id)
+        else:
+            session["favorites"][id] = {
+                "description": favorite_description,
+                "name": favorite_name,
+                "img": favorite_img,
+                "id": favorite_id
+                }
+       
         db.execute("UPDATE users SET favorites = ? WHERE id = ?",json.dumps(session["favorites"]),session["user_id"])
-        return redirect(request.referrer)    
-    else:
-        favorites = json.loads(db.execute("SELECT favorites FROM users WHERE id = ?",session["user_id"])[0]["favorites"])
-        search = request.args.get('search')
-        recipes = lookup_recipes(0,1000,"",str(search))
-        top3_favorites = list(favorites.items())[0][1].get('img')
-        return render_template('index.html',recipes=recipes,favorites=favorites,search=search,top3_favorites=top3_favorites)
+        return redirect(request.referrer)
 
     
+
 @app.route('/my_recipes',methods=['GET', 'POST'])
 @login_required
 def my_recipes():
