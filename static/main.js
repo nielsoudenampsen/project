@@ -33,3 +33,11 @@ $(document).ready(function(){
      
     });
   });
+
+$(document).ready(function(){
+    $(".update-button").click(function(){
+        location.reload();
+        return false;
+    });
+    
+});

@@ -68,14 +68,19 @@ def lookup_recipes(start,size,tag,query):
         exist = db.execute('SELECT search FROM recipes WHERE search = ?',query)
         
         if len(exist) != 1:
-            response = requests.request("GET", url, headers=headers, params=querystring)
-            cache = json.dumps(response.json())
+            response = requests.request("GET", url, headers=headers, params=querystring).json()
+            response_lenth = response['count']
+
+            if response_lenth == 0:
+                return None
+
+            cache = json.dumps(response)
             db.execute('INSERT INTO recipes (search,json) VALUES (?,?)',query,cache)
-            response = response.json()
         else:
             response = db.execute('SELECT json FROM recipes WHERE search = ?',query)
             response = response[0]['json']
             response = json.loads(response)
+
         recipes = []
         for i in range(len(response["results"])):
             recipes.append({

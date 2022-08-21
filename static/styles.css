@@ -14,6 +14,8 @@ img.d-block{
     object-fit: cover;
 }
 
+
+
 .card-title{
     height: 46px;
 }
@@ -64,6 +66,13 @@ a {
     bottom: auto;
     background-color: rgba(100, 100, 100, 0.7);
     color: white;
+  }
+
+  .card_name{
+    height: 80%;
+  }
+  .favorite_button{
+    overflow: visible;
   }
 
 

@@ -23,6 +23,7 @@ app.jinja_env.filters["take"] = take
 app.config["SESSION_FILE_DIR"] = mkdtemp()
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
+app.config["SESSION_COOKIE_NAME"]
 Session(app)
 
 db = SQL("sqlite:///recipe.db")
@@ -181,6 +182,27 @@ def register():
         return redirect("/")
     else:
         return render_template('register.html')
+
+@app.route('/change-credentials',methods=['GET', 'POST'])
+@login_required
+def change_credentials():
+    if request.method == "POST":
+        password = request.form.get('password')
+        confirm =  request.form.get('confirm')
+        old_password_hash = db.execute("SELECT hash FROM users WHERE id = ?",session["user_id"])[0]["hash"]
+
+        if password != confirm:
+            flash("Password are not confirmed","danger")
+            return redirect("/change-credentials")
+        elif check_password_hash(old_password_hash,password):
+            flash("Password is the same as the old password","danger")
+            return redirect("/change-credentials")
+        else:
+            db.execute("UPDATE users SET hash = ? WHERE id = ?",generate_password_hash(password=password,method='pbkdf2:sha256',salt_length=8),session["user_id"])
+            flash("Changed credentials succesful","success")
+            return redirect('/')
+    else:
+        return render_template('change-credentials.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
