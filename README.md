@@ -1,5 +1,5 @@
 # Recipes website
-#### Video Demo:  <https://www.youtube.com/user/nielsoudenampsen1/videos>
+#### Video Demo:  <https://www.youtube.com/watch?v=RJIzR0e-alk&ab_channel=NielsOudenampsen>
 #### Description
 This is my final project of the CS50 course. I designed an application where users can search for all the recipes from the Tasty website. They are also able to view recipes and add them to their favorite recipes list. The project uses the following programming languages (and frameworks):
 - Python (Flask)
