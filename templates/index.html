@@ -24,7 +24,7 @@
 </form>
 <div class="row justify-content-center">
  
-{% if (recipes is none) and (search is not none) %}
+{% if (recipes is none) and (search is none) %}
 
 <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
   <ol class="carousel-indicators">
@@ -122,24 +122,21 @@
 </div>
 
 {% endfor %}
-
-{% elif search is not none %}
+{% endif %}
+</div>
+{% if (search is not none) and (recipes is none) %}
 <div class="row justify-content-center">
   <h1>Nothing found</h1>
 </div>  
-{% if search is not none %}
 
 <div class="row justify-content-center">
   <h6>Your search string: {{search}}</h6>
 </div>
-{% endif %}
+
 
 <div class="row justify-content-center">
     <img style="width: 100%; height: auto;" src="../static/assets/404.webp" alt="Error nothing found">
 </div>
 
 {% endif %}
-
-</div>
-
 {% endblock %}
