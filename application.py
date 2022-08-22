@@ -1,5 +1,4 @@
 import os, json
-from pprint import pprint
 
 from flask import Flask,flash,render_template,request,redirect, session,url_for
 from flask.helpers import get_flashed_messages
@@ -29,9 +28,8 @@ Session(app)
 db = SQL("sqlite:///recipe.db")
 
 # Make sure API key is set
-# if not os.environ.get("API_KEY"):
-#     raise RuntimeError("API_KEY not set")
-
+if not os.environ.get("API_KEY"):
+    raise RuntimeError("API_KEY not set")
 
 @app.route('/recipe/<id>',methods=['GET', 'POST'])
 @login_required
@@ -39,7 +37,6 @@ def recipe_detail(id):
     name = request.form.get("name")
     img = request.form.get("img")
     description = request.form.get("description")
-    print(id,img,description,name)
     return render_template("recipe_detail.html",name=name,img=img,description=description,id=id)
 
 
@@ -49,7 +46,6 @@ def home():
     favorites = json.loads(db.execute("SELECT favorites FROM users WHERE id = ?",session["user_id"])[0]["favorites"])
     search = request.args.get('search')
     recipes = lookup_recipes(0,1000,"",str(search))
-    print(recipes)
     #top3_favorites = list(favorites.items())[0][1].get('img')
     return render_template('index.html',recipes=recipes,favorites=favorites,search=search,)#top3_favorites=top3_favorites)
 
@@ -64,11 +60,6 @@ def favorite(id):
 
 
         if id in session["favorites"]:
-            
-            print()
-            print("delete id ")
-            print(session["favorites"])
-            print(session["favorites"][id])
             session["favorites"].pop(id)
         else:
             session["favorites"][id] = {

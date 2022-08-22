@@ -40,13 +40,13 @@ $(document).ready(function(){
 
 
 // DEBUG only, automaticly login
-$(document).ready(function(){
+// $(document).ready(function(){
 
-    username_login = document.getElementById("username_login").setAttribute("value","n")
-    password_login = document.getElementById("password_login").setAttribute("value","1")
+//     username_login = document.getElementById("username_login").setAttribute("value","n")
+//     password_login = document.getElementById("password_login").setAttribute("value","1")
     
-    let path = window.location.pathname
-    if(path == '/login' || path == '/logout' ) {
-        document.login.submit();
-    } 
-});
+//     let path = window.location.pathname
+//     if(path == '/login' || path == '/logout' ) {
+//         document.login.submit();
+//     } 
+// });

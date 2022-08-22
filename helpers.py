@@ -2,7 +2,6 @@ import json
 import os
 import requests
 import urllib.parse
-from pprint import pprint
 from cs50 import SQL
 from itertools import islice
 
@@ -62,7 +61,7 @@ def lookup_recipes(start,size,tag,query):
         querystring = {"from":str(start),"size":str(size),"tags":tag,"q":query}
 
         headers = {
-            'x-rapidapi-key': "cbc9c244d1mshbc7142f4dcf7d59p15a492jsn04e851823481",
+            'x-rapidapi-key': '{}'.format(api_key),
             'x-rapidapi-host': "tasty.p.rapidapi.com"
             }
         exist = db.execute('SELECT search FROM recipes WHERE search = ?',query)
