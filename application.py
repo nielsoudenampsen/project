@@ -49,6 +49,7 @@ def home():
     favorites = json.loads(db.execute("SELECT favorites FROM users WHERE id = ?",session["user_id"])[0]["favorites"])
     search = request.args.get('search')
     recipes = lookup_recipes(0,1000,"",str(search))
+    print(recipes)
     #top3_favorites = list(favorites.items())[0][1].get('img')
     return render_template('index.html',recipes=recipes,favorites=favorites,search=search,)#top3_favorites=top3_favorites)
 
@@ -88,10 +89,7 @@ def my_recipes():
     favorites = json.loads(db.execute("SELECT favorites FROM users WHERE id = ?",session["user_id"])[0]["favorites"])
     return render_template('my_recipes.html',favorites=favorites)
     
-@app.route('/stats',methods=['GET', 'POST'])
-@login_required
-def stats():
-    return render_template('stats.html')
+
 
 @app.route('/logout',methods=['GET','POST'])
 def logout():
