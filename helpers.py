@@ -1,7 +1,6 @@
 import json
 import os
 import requests
-import urllib.parse
 from cs50 import SQL
 from itertools import islice
 
@@ -12,6 +11,7 @@ from functools import wraps
 from sqlalchemy.sql.expression import false
 
 db = SQL("sqlite:///recipe.db")
+
 
 def isInList(item,list):
     """Checks if item is in the dict"""
